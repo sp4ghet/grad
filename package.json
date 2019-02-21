@@ -1,0 +1,32 @@
+{
+  "dependencies": {
+    "elm": "^0.19.0-bugfix6"
+  },
+  "name": "grad",
+  "description": "Cosine Gradients in Different Color Spaces",
+  "version": "0.0.1",
+  "main": "src/Main.elm",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "elm make src/Main.elm --output dist/index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/sp4ghet/grad.git"
+  },
+  "keywords": [
+    "elm",
+    "color",
+    "cosine",
+    "gradient",
+    "color",
+    "space"
+  ],
+  "author": "sp4ghet",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sp4ghet/grad/issues"
+  },
+  "homepage": "https://github.com/sp4ghet/grad#readme"
+}
