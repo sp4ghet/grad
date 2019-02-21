@@ -1,31 +1,20 @@
+module Main exposing (main)
+
 import Browser
-import Html exposing (Html, div)
+import State exposing (init, update)
+import Types exposing (Model, Msg(..))
+import View exposing (view)
 
 
+main : Program Int Model Msg
 main =
-  Browser.sandbox { init = init, update = update, view = view }
-
-
--- MODEL
-
-type alias Model = Int
-
-init : Model
-init =
-  0
-
-
--- UPDATE
-
-type Msg = None
-
-update : Msg -> Model -> Model
-update msg model =
-  case msg of
-    _ -> model
-
--- VIEW
-
-view : Model -> Html Msg
-view model =
-  div [] []
+    Browser.document
+        { init = init
+        , update = update
+        , view =
+            \m ->
+                { title = "grad - Cosine Gradient in Multiple Color Spaces"
+                , body = [ view m ]
+                }
+        , subscriptions = \_ -> Sub.none
+        }

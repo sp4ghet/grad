@@ -1,32 +1,51 @@
 {
-  "dependencies": {
-    "elm": "^0.19.0-bugfix6"
-  },
-  "name": "grad",
-  "description": "Cosine Gradients in Different Color Spaces",
-  "version": "0.0.1",
-  "main": "src/Main.elm",
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "elm make src/Main.elm --output dist/index.html"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/sp4ghet/grad.git"
-  },
-  "keywords": [
-    "elm",
-    "color",
-    "cosine",
-    "gradient",
-    "color",
-    "space"
-  ],
-  "author": "sp4ghet",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/sp4ghet/grad/issues"
-  },
-  "homepage": "https://github.com/sp4ghet/grad#readme"
+    "author": "sp4ghet",
+    "name": "grad",
+    "version": "0.0.1",
+    "description": "Cosine Gradient in multiple color spaces",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/sp4ghet/grad.git"
+    },
+    "license": "MIT",
+    "scripts": {
+        "test": "elm-test",
+        "start": "npm run dev",
+        "dev": "webpack-dev-server --hot --colors --port 3000",
+        "build": "webpack",
+        "prod": "webpack -p"
+    },
+    "dependencies": {
+        "bulma": "^0.7.4"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.3.3",
+        "@babel/preset-env": "^7.3.1",
+        "babel-loader": "^8.0.5",
+        "clean-webpack-plugin": "^1.0.1",
+        "copy-webpack-plugin": "^4.6.0",
+        "css-loader": "^2.1.0",
+        "elm": "^0.19.0-bugfix6",
+        "elm-hot-webpack-loader": "^1.0.2",
+        "elm-minify": "^2.0.4",
+        "elm-test": "^0.19.0-rev4",
+        "elm-verify-examples": "^3.0.1",
+        "elm-webpack-loader": "^5.0.0",
+        "file-loader": "^3.0.1",
+        "html-webpack-plugin": "^3.2.0",
+        "mini-css-extract-plugin": "^0.5.0",
+        "node-sass": "^4.11.0",
+        "resolve-url-loader": "^3.0.1",
+        "sass-loader": "^7.1.0",
+        "style-loader": "^0.23.1",
+        "url-loader": "^1.1.2",
+        "webpack": "^4.29.4",
+        "webpack-cli": "^3.2.3",
+        "webpack-dev-server": "^3.1.14",
+        "webpack-merge": "^4.2.1"
+    },
+    "main": "index.js",
+    "prettier": {
+        "tabWidth": 4
+    }
 }
