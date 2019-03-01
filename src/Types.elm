@@ -31,7 +31,7 @@ type alias CosineParam =
 type Msg
     = ChangeColorSpace String
     | UpdateCosine DimensionId CosineParam String
-    | ChangeLanguage Language
+    | ChangeLanguage String
     | ChangeSampleCount Int
 
 

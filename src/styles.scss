@@ -10,10 +10,31 @@ $github-invert: findColorInvert($github);
 
 @import "../node_modules/bulma/sass/utilities/derived-variables.sass";
 $addColors: (
-  "twitter":($twitter, $twitter-invert),
-  "linkedin": ($linkedin, $linkedin-invert),
-  "github": ($github, $github-invert)
+    "twitter": (
+        $twitter,
+        $twitter-invert
+    ),
+    "linkedin": (
+        $linkedin,
+        $linkedin-invert
+    ),
+    "github": (
+        $github,
+        $github-invert
+    )
 );
 $colors: map-merge($colors, $addColors);
 
 @import "../node_modules/bulma/bulma";
+
+.webgl-gradient {
+    width: 80vw;
+    height: 5vh;
+    background-color: cyan;
+}
+
+.webgl-graph {
+    width: 80vw;
+    height: 30vh;
+    background-color: magenta;
+}

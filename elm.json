@@ -12,6 +12,7 @@
             "elm/http": "2.0.0",
             "elm/json": "1.1.2",
             "elm-community/list-extra": "8.1.0",
+            "elm-explorations/linear-algebra": "1.0.3",
             "elm-explorations/webgl": "1.0.1"
         },
         "indirect": {

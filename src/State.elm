@@ -50,7 +50,7 @@ update message model =
                         List.take dimensions model.cosines
 
                     else
-                        defaultCosine "" :: model.cosines
+                        model.cosines ++ [ defaultCosine "" ]
 
                 dimIds =
                     dimIdsFromColorSpace newColorSpace
@@ -66,7 +66,11 @@ update message model =
             , Cmd.none
             )
 
-        ChangeLanguage newLanguage ->
+        ChangeLanguage languageString ->
+            let
+                newLanguage =
+                    parseLanguage languageString model.codeLanguage
+            in
             ( { model | codeLanguage = newLanguage }, Cmd.none )
 
         ChangeSampleCount newGradientSamples ->
@@ -115,6 +119,22 @@ updateCosine cosineParam newValue cosine =
 
         _ ->
             cosine
+
+
+parseLanguage : String -> Language -> Language
+parseLanguage languageString currentLanguage =
+    case languageString of
+        "GLSL" ->
+            GLSL
+
+        "Unity" ->
+            Unity
+
+        "CSS" ->
+            CSS
+
+        _ ->
+            currentLanguage
 
 
 parseColorSpaceString : String -> ColorSpace -> ColorSpace
