@@ -21,7 +21,9 @@ view model =
                 , gradient model
                 ]
             , channelUi model
+            , hr [] []
             , globalUi model.global
+            , hr [] []
             , codeSnippet model
             ]
         ]

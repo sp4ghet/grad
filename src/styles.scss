@@ -28,13 +28,13 @@ $colors: map-merge($colors, $addColors);
 @import "../node_modules/bulma/bulma";
 
 .webgl-gradient {
-    width: 80vw;
-    height: 5vh;
+    width: 800px;
+    height: 50px;
     background-color: cyan;
 }
 
 .webgl-graph {
-    width: 80vw;
-    height: 30vh;
-    background-color: magenta;
+    width: 800px;
+    height: 400px;
+    background-color: black;
 }
