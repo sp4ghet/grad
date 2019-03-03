@@ -21,10 +21,14 @@ import Types
 float2string : Float -> String
 float2string val =
     let
-        vStr =
-            String.fromInt <| round (val * 100)
+        vList : List Char
+        vList =
+            String.toList <| String.fromInt <| round (val * 100)
     in
-    case String.toList vStr of
+    case vList of
+        _ :: _ :: [] ->
+            String.fromList <| '0' :: '.' :: vList
+
         ones :: unders ->
             String.fromList <| ones :: [ '.' ] ++ unders
 
