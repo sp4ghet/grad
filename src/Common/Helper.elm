@@ -1,4 +1,10 @@
-module Common.Helper exposing (combineCosineParams, convertToRGB, findCosine, matchDimensionId)
+module Common.Helper exposing
+    ( combineCosineParams
+    , convertToRGB
+    , findCosine
+    , float2string
+    , matchDimensionId
+    )
 
 import Debug
 import List
@@ -9,6 +15,20 @@ import Types
         , Cosine
         , DimensionId
         )
+
+
+float2string : Float -> String
+float2string val =
+    let
+        vStr =
+            String.fromInt <| round (val * 100)
+    in
+    case String.toList vStr of
+        ones :: unders ->
+            String.fromList <| ones :: [ '.' ] ++ unders
+
+        _ ->
+            String.fromFloat val
 
 
 findCosine : DimensionId -> List Cosine -> Cosine
