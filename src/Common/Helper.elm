@@ -26,6 +26,9 @@ float2string val =
             String.toList <| String.fromInt <| round (val * 100)
     in
     case vList of
+        _ :: [] ->
+            String.fromList <| '0' :: '.' :: '0' :: vList
+
         _ :: _ :: [] ->
             String.fromList <| '0' :: '.' :: vList
 
