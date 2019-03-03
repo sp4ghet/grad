@@ -8,7 +8,7 @@ import List.Extra as ListX exposing (getAt)
 import Math.Vector2 as Vec2 exposing (Vec2, vec2)
 import Math.Vector3 as Vec3 exposing (Vec3, vec3)
 import Math.Vector4 as Vec4 exposing (Vec4, vec4)
-import Types exposing (ColorSpace, Cosine, Model, Msg(..))
+import Types exposing (ColorSpace(..), Cosine, Model, Msg(..))
 import WebGL exposing (Mesh, Shader)
 
 
@@ -33,6 +33,9 @@ graph model =
 
         offsets =
             createOffsetVec cosines
+
+        colorSpace =
+            colorSpaceToIntId model.colorSpace
     in
     div
         [ class "webgl-graph"
@@ -50,6 +53,7 @@ graph model =
                 , amplitude = amplitudes
                 , frequency = frequencies
                 , offset = offsets
+                , colorSpace = colorSpace
                 }
             ]
         ]
@@ -72,6 +76,9 @@ gradient model =
 
         offsets =
             createOffsetVec cosines
+
+        colorSpace =
+            colorSpaceToIntId model.colorSpace
     in
     div
         [ class "webgl-gradient"
@@ -89,6 +96,7 @@ gradient model =
                 , amplitude = amplitudes
                 , frequency = frequencies
                 , offset = offsets
+                , colorSpace = colorSpace
                 }
             ]
         ]
@@ -96,6 +104,22 @@ gradient model =
 
 
 -- Helpers
+
+
+colorSpaceToIntId : ColorSpace -> Int
+colorSpaceToIntId colorSpace =
+    case colorSpace of
+        RGB ->
+            0
+
+        HSV ->
+            1
+
+        CMYK ->
+            2
+
+        XYZ ->
+            3
 
 
 createPhasesVec : List Cosine -> Vec4
@@ -197,6 +221,7 @@ type alias Uniforms =
     , amplitude : Vec4.Vec4
     , frequency : Vec4.Vec4
     , offset : Vec4.Vec4
+    , colorSpace : Int
     }
 
 
@@ -239,12 +264,20 @@ gradientShader =
     uniform vec4 amplitude;
     uniform vec4 frequency;
     uniform vec4 offset;
+    uniform int colorSpace;
 
     varying vec3 vcolor;
 
+    const int RGB = 0;
+    const int HSV = 1;
+    const int CMYK = 2;
+    const int XYZ = 3;
+
+    const float TAU = 2. * 3.14159265;
+
     vec4 cosine_gradient(float x,  vec4 phase, vec4 amp, vec4 freq, vec4 offset){
-      phase *= 3.14159265 * 2.;
-      x *= 3.14159265 * 2.;
+      phase *= TAU;
+      x *= TAU;
 
       return vec4(
         (offset.r) + amp.r * 0.5 * cos(x * freq.r + phase.r) + 0.5,
@@ -254,11 +287,35 @@ gradientShader =
         );
     }
 
+    vec3 hsv2rgb(vec3 c) {
+      vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+      vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+      return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+    }
+
+    vec3 gradientToRGB(vec4 cos_grad){
+      if(colorSpace == RGB){
+        return cos_grad.rgb;
+      }
+      if(colorSpace == HSV){
+        return hsv2rgb(cos_grad.rgb);
+      }
+      if(colorSpace == CMYK){
+
+      }
+      if(colorSpace == XYZ){
+
+      }
+      return cos_grad.rgb;
+    }
 
     void main(){
       vec2 p = (gl_FragCoord.xy * 2. - resolution) / min(resolution.x, resolution.y);
       vec2 uv = gl_FragCoord.xy / resolution;
-      vec4 color = vec4(cosine_gradient(uv.x, phase, amplitude, frequency, offset).rgb, 1.0);
+      vec4 cos_grad = cosine_gradient(uv.x, phase, amplitude, frequency, offset);
+      cos_grad = clamp(cos_grad, 0., 1.);
+
+      vec4 color = vec4(gradientToRGB(cos_grad), 1.0);
 
       gl_FragColor = color;
     }
@@ -274,8 +331,15 @@ graphShader =
     uniform vec4 amplitude;
     uniform vec4 frequency;
     uniform vec4 offset;
+    uniform int colorSpace;
 
     varying vec3 vcolor;
+
+    const int RGB = 0;
+    const int HSV = 1;
+    const int CMYK = 2;
+    const int XYZ = 3;
+
     const float TAU = 2. * 3.14159265;
 
     // https://thebookofshaders.com/05/
@@ -285,8 +349,8 @@ graphShader =
     }
 
     vec4 cosine_gradient(float x,  vec4 phase, vec4 amp, vec4 freq, vec4 offset){
-      phase *= 3.14159265 * 2.;
-      x *= 3.14159265 * 2.;
+      phase *= TAU;
+      x *= TAU;
 
       return vec4(
         (offset.r) + amp.r * 0.5 * cos(x * freq.r + phase.r) + 0.5,
@@ -294,6 +358,39 @@ graphShader =
         (offset.b) + amp.b * 0.5 * cos(x * freq.b + phase.b) + 0.5,
         (offset.a) + amp.a * 0.5 * cos(x * freq.a + phase.a) + 0.5
         );
+    }
+
+    vec3 hsv2rgb(vec3 c) {
+      vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+      vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+      return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+    }
+
+    vec4 plotToRGB(vec2 uv, vec4 plot){
+      vec4 color = vec4(.95);
+      vec2 bw = vec2(0., 1.);
+      if(colorSpace == RGB){
+          color -= plot.r * bw.xyyx;
+          color -= plot.g * bw.yxyx;
+          color -= plot.b * bw.yyxx;
+        return color;
+      }
+      if(colorSpace == HSV){
+        vec3 neg_hue = vec3(1.) - hsv2rgb(vec3(uv.y, 1., 1.));
+        vec3 neg_sat = vec3(1.) - hsv2rgb(vec3(uv.x, uv.y, 0.75));
+        vec3 neg_val = vec3(1.) - hsv2rgb(vec3(uv.x, 0.5, uv.y));
+        color -= plot.x * vec4(neg_hue, 0.);
+        color -= plot.y * vec4(neg_sat, 0.);
+        color -= plot.z * vec4(neg_val, 1.);
+        return color;
+      }
+      if(colorSpace == CMYK){
+
+      }
+      if(colorSpace == XYZ){
+
+      }
+      return color;
     }
 
     void main(){
@@ -305,14 +402,13 @@ graphShader =
       vec4 cos_grad = cosine_gradient(uv.x, phase, amplitude, frequency, offset);
       cos_grad = clamp(cos_grad, 0., 1.);
 
-      float plotted_r = plot(uv * vec2(1., 1.1) - 0.05, cos_grad.r);
-      float plotted_g = plot(uv * vec2(1., 1.1) - 0.05, cos_grad.g);
-      float plotted_b = plot(uv * vec2(1., 1.1) - 0.05, cos_grad.b);
+      vec4 plotted = vec4(0.);
+      plotted.x = plot(uv * vec2(1., 1.1) - 0.05, cos_grad.x);
+      plotted.y = plot(uv * vec2(1., 1.1) - 0.05, cos_grad.y);
+      plotted.z = plot(uv * vec2(1., 1.1) - 0.05, cos_grad.z);
+      plotted.w = plot(uv * vec2(1., 1.1) - 0.05, cos_grad.w);
 
-      color = vec4(.95);
-      color -= plotted_r*vec4(0., 1., 1., 0.);
-      color -= plotted_g*vec4(1., 0., 1., 0.);
-      color -= plotted_b*vec4(1., 1., 0., 0.);
+      color = plotToRGB(uv, plotted);
 
       gl_FragColor = color;
     }

@@ -63,5 +63,5 @@ type Language
 type ColorSpace
     = RGB
     | HSV
-    | XYZ
     | CMYK
+    | XYZ
