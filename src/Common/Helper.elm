@@ -14,6 +14,7 @@ import Types
         ( ColorSpace(..)
         , Cosine
         , DimensionId
+        , defaultCosine
         )
 
 
@@ -37,12 +38,7 @@ findCosine dimensionId cosines =
         result =
             ListX.find (matchDimensionId dimensionId) cosines
     in
-    case result of
-        Just cosine ->
-            cosine
-
-        Nothing ->
-            Debug.todo "No such dimension when searching for a cosine object"
+    Maybe.withDefault (defaultCosine dimensionId) result
 
 
 matchDimensionId : DimensionId -> Cosine -> Bool
